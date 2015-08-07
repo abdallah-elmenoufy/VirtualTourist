@@ -11,11 +11,13 @@ import MapKit
 
 class VirtualTouristMap: UIViewController, MKMapViewDelegate {
 
-    // Declearing the mapView outlet
+    // Declaring the mapView outlet
     @IBOutlet weak var mapView: MKMapView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        title = "Vitrual Tourist"
         
         // Set the mapView delegate to be (self)
         mapView.delegate = self
