@@ -58,11 +58,16 @@ class VirtualTouristMap: UIViewController, MKMapViewDelegate {
         let tappedPoint: CGPoint = gestureRecognizer.locationInView(mapView)
         let touchMapPoint: CLLocationCoordinate2D = mapView.convertPoint(tappedPoint, toCoordinateFromView: mapView)
         
-        // Add the tappedPin to the MapView and to CoreData
+        // Add the tappedPin to the MapView, ...
         if UIGestureRecognizerState.Began == gestureRecognizer.state {
             let pin = Pin(annotationLatitude: touchMapPoint.latitude, annotationLongitude: touchMapPoint.longitude, context: sharedContext)
             mapView.addAnnotation(pin)
+            
+        // ... and to CoreData
             CoreDataStackManager.sharedInstance().saveContext()
+            
+            
+            
         }
     }
 

@@ -18,6 +18,10 @@ class Pin: NSManagedObject, MKAnnotation {
     @NSManaged var latitude: NSNumber
     @NSManaged var longitude: NSNumber
     
+    // TODO: - ????
+    @NSManaged var span: NSNumber
+    @NSManaged var region: NSNumber
+    
     
     // Standard CoreData init(s)
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -31,6 +35,9 @@ class Pin: NSManagedObject, MKAnnotation {
         
         latitude = NSNumber(double: annotationLatitude)
         longitude = NSNumber(double: annotationLongitude)
+        
+        let span: MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        let region: MKCoordinateRegion = MKCoordinateRegion(center: self.coordinate, span: span)
         
     }
     
