@@ -14,36 +14,41 @@ import CoreData
 
 class Pin: NSManagedObject, MKAnnotation {
     
-    // Manage latitude and longitude properties
-    @NSManaged var latitude: NSNumber
-    @NSManaged var longitude: NSNumber
+    // MARK: - Properties
     
-    // TODO: - ????
-    @NSManaged var span: NSNumber
-    @NSManaged var region: NSNumber
+    @NSManaged var latitude: Double
+    @NSManaged var longitude: Double
+    @NSManaged var numberOfPagesReturned: NSNumber?
+    @NSManaged var photos: NSMutableOrderedSet
     
+    var coordinate: CLLocationCoordinate2D {
+        
+        set {
+            self.latitude = newValue.latitude
+            self.longitude = newValue.longitude
+        }
+        
+        get {
+            return CLLocationCoordinate2DMake(latitude, longitude)
+        }
+    }
     
-    // Standard CoreData init(s)
+    // MARK: - Initialisers
+    
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    // Class initializer with CoreData
-    init(annotationLatitude: Double, annotationLongitude: Double, context: NSManagedObjectContext) {
-        let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)
-        super.init(entity: entity!, insertIntoManagedObjectContext: context)
+    init(coordinate: CLLocationCoordinate2D, context: NSManagedObjectContext) {
         
-        latitude = NSNumber(double: annotationLatitude)
-        longitude = NSNumber(double: annotationLongitude)
+        // Core Data
+        let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
         
-        let span: MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region: MKCoordinateRegion = MKCoordinateRegion(center: self.coordinate, span: span)
-        
-    }
-    
-    // MKAnnotation Protocol
-    var coordinate: CLLocationCoordinate2D {
-        return CLLocationCoordinate2D(latitude: latitude as! Double, longitude: longitude as! Double)
+        self.latitude = coordinate.latitude
+        self.longitude = coordinate.longitude
+        self.photos = NSMutableOrderedSet()
     }
     
 }

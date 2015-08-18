@@ -8,47 +8,82 @@
 
 import Foundation
 
-class FlickrClient: NSObject {
+class FlickrClient {
+    
+    //MARK: - Shared Instance
+    
+    //Single line shared instance declaration as in http://krakendev.io/blog/the-right-way-to-write-a-singleton
+    
+    static let sharedInstance = FlickrClient()
+    
+    //MARK: - Properties
     
     var session: NSURLSession
     
-    override init() {
+    //MARK: - Initialiser
+    
+    private init() {
+        
         session = NSURLSession.sharedSession()
-        super.init()
     }
     
     
-    // Function to download images from Flickr by Lan/Long search
-    func getFlickrsByLatLong(methodArguments: [String : AnyObject]) {
-     
-        
-        
-        
+    //MARK: - GET method
+    
+    func GETMethod(parameters: [String : AnyObject],
+        completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+            
+            // Build the URL and URL request
+            let urlString = Constants.BaseFlickrURL + FlickrClient.escapedParameters(parameters)
+            var request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
+            
+            // Make the request
+            let task = session.dataTaskWithRequest(request) {
+                data, response, downloadError in
+                
+                // Parse the received data
+                if let error = downloadError {
+                    
+                    let newError = FlickrClient.errorForData(data, response: response, error: error)
+                    completionHandler(result: nil, error: newError)
+                } else {
+                    
+                    FlickrClient.parseJSONWithCompletionHandler(data, completionHandler: completionHandler)
+                }
+            }
+            
+        task.resume()
     }
     
     
-    
-    
-    
-    
-    func createBoundingBoxString() -> String {
-        
-        let latitude = 
-        let longitude = (self.longitudeTextField.text as NSString).doubleValue
-        
-        /* Fix added to ensure box is bounded by minimum and maximums */
-        let bottom_left_lon = max(longitude - BOUNDING_BOX_HALF_WIDTH, LON_MIN)
-        let bottom_left_lat = max(latitude - BOUNDING_BOX_HALF_HEIGHT, LAT_MIN)
-        let top_right_lon = min(longitude + BOUNDING_BOX_HALF_HEIGHT, LON_MAX)
-        let top_right_lat = min(latitude + BOUNDING_BOX_HALF_HEIGHT, LAT_MAX)
-        
-        return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
+    func GETMethodForURLString(urlString: String,
+        completionHandler: (result: NSData?, error: NSError?) -> Void) {
+            
+            // Create the request
+            var request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
+            
+            // Make the request
+            let task = session.dataTaskWithRequest(request) {
+                data, response, downloadError in
+                
+                if let error = downloadError {
+                    
+                    let newError = FlickrClient.errorForData(data, response: response, error: error)
+                    completionHandler(result: nil, error: newError)
+                } else {
+                    
+                    completionHandler(result: data, error: nil)
+                }
+            }
+            
+            task.resume()
     }
-
     
+    
+// ====================================================================================================
     
     /* Helper function: Given a dictionary of parameters, convert it to a string for a url */
-    func escapedParameters(parameters: [String : AnyObject]) -> String {
+    class func escapedParameters(parameters: [String : AnyObject]) -> String {
         
         var urlVars = [String]()
         
@@ -68,5 +103,41 @@ class FlickrClient: NSObject {
         return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
     }
 
+    
+    //Check to see if there is a received error, if not, return the original local error.
+    class func errorForData(data: NSData?, response: NSURLResponse?, error: NSError) -> NSError {
+        
+        if let parsedResult = NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments, error: nil) as? [String : AnyObject] {
+            
+            if let status = parsedResult[JSONResponseKeys.Status]  as? String,
+                message = parsedResult[JSONResponseKeys.Message] as? String {
+                    
+                    if status == JSONResponseValues.Failure {
+                        
+                        let userInfo = [NSLocalizedDescriptionKey: message]
+                        
+                        return NSError(domain: "Virtual Tourist Error", code: 1, userInfo: userInfo)
+                    }
+            }
+        }
+        return error
+    }
+    
+    //Parse the received JSON data and pass it to the completion handler.
+    class func parseJSONWithCompletionHandler(data: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+        
+        var parsingError: NSError?
+        let parsedResult: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments, error: &parsingError)
+        
+        if let error = parsingError {
+            
+            completionHandler(result: nil, error: error)
+        } else {
+            
+            completionHandler(result: parsedResult, error: nil)
+        }
+    }
+
+    
     
 }
