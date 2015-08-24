@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import MapKit
+import CoreData
 
 extension FlickrClient {
 
@@ -15,23 +17,17 @@ extension FlickrClient {
     func downloadPhotosForPin(pin: Pin, completionHandler: (success: Bool, error: NSError?) -> Void) {
         
         //If a pin has photos already, generate a random page from the available pages on Flickr and add it to the parameters
-
-        var page = 1
+        // Initializing randomPage variable
+        var randomPage: Int = 1
         
         if let numberOfPages = pin.numberOfPagesReturned {
             
-            let numberOfPagesAsInt = numberOfPages as! Int               //All this ugly code is to get my NSNumber
-            let numberOfPagesAsUInt32 = UInt32(numberOfPagesAsInt)       //wrapped Int into a UInt32 and back again 😞
-            let pageAsUInt32 = arc4random_uniform(numberOfPagesAsUInt32) //Here, get a random page in the range received.
-            
-            page = Int(pageAsUInt32) + 1 //Avoids returning 0 as a response.
-            
-            // TODO: -
-            // page = Int((arc4random_uniform(UInt32(numberOfPages as! Int))) + 1
+            let numberOfPagesAsInt = numberOfPages as! Int
+             randomPage = Int((arc4random_uniform(UInt32(numberOfPagesAsInt)))) + 1 //Avoids returning 0 as a response.
             
         }
         
-        //Declare parameters for network call.
+        //Declare parameters for the network call
         let parameters: [String : AnyObject] = [
             
             URLKeys.Method         : Methods.Search,
@@ -41,11 +37,11 @@ extension FlickrClient {
             URLKeys.Latitude       : pin.coordinate.latitude,
             URLKeys.Longitude      : pin.coordinate.longitude,
             URLKeys.Extras         : URLValues.MediumPhotoURL,
-            URLKeys.Page           : page,
-            URLKeys.PerPage        : 21 //Arbitrary limit.
+            URLKeys.Page           : randomPage,
+            URLKeys.PerPage        : 21
         ]
         
-        //Make the call.
+        //Make the call
         GETMethod(parameters, completionHandler: {
             results, error in
             
@@ -56,7 +52,7 @@ extension FlickrClient {
                 
                 //If we get some photos...
                 if let photosDictionary = results.valueForKey(JSONResponseKeys.Photos) as? [String: AnyObject],
-                    photosArray = photosDictionary[JSONResponseKeys.Photo]     as? [[String : AnyObject]],
+                    photosArray = photosDictionary[JSONResponseKeys.Photo] as? [[String : AnyObject]],
                     numberOfPhotoPages = photosDictionary[JSONResponseKeys.Pages]     as? Int {
                         
                         //...save the number of pages returned to the Pin object...
@@ -84,7 +80,7 @@ extension FlickrClient {
                         completionHandler(success: true, error: nil)
                 } else {
                     
-                    completionHandler(success: false, error: NSError(domain: "getPhotosForPin", code: 0, userInfo: nil))
+                    completionHandler(success: false, error: NSError(domain: "downloadPhotosForPin", code: 0, userInfo: nil))
                 }
             }
         })
@@ -98,8 +94,8 @@ extension FlickrClient {
         GETMethodForURLString(imageURLString, completionHandler: {
             result, error in
             
-            //...if something goes wrong, save error message to the photo managed object.
-            //This allows a placeholder image to be displayed instead of a black hole.
+            //...if error happens, save error message to the photo managed object.
+            // This allows a placeholder image to be displayed instead of a black hole.
             if let error = error {
                 
                 photo.imageFilePath = "error"

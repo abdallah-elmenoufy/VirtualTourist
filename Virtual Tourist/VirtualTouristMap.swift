@@ -16,6 +16,9 @@ class VirtualTouristMap: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var tapToDeletePinsLabel: UILabel!
+    @IBOutlet var longPress: UILongPressGestureRecognizer!
+    
+    
     
     var deleteButton: UIBarButtonItem?
     
@@ -26,11 +29,6 @@ class VirtualTouristMap: UIViewController, MKMapViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Add LongPressGestureRecognizer to allow dropping Pins
-        var longPress = UILongPressGestureRecognizer(target: self, action: "dropPin:")
-        longPress.minimumPressDuration = 0.5
-        mapView.addGestureRecognizer(longPress)
         
         // Set the mapView delegate to be (self)
         mapView.delegate = self
@@ -59,7 +57,7 @@ class VirtualTouristMap: UIViewController, MKMapViewDelegate {
     var pinToBeAdded: Pin? = nil
 
     // Dropping a Pin will convert the tapped point to a coordinate, save it to CoreData and make network call to flickr to get the associated photos with this pin coordinate
-    func dropPin(gestureRecognizer: UIGestureRecognizer) {
+    @IBAction func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
         
         // Extract the tapped point and convert it to a coordinate
         let tappedPoint: CGPoint = gestureRecognizer.locationInView(mapView)
@@ -128,7 +126,7 @@ class VirtualTouristMap: UIViewController, MKMapViewDelegate {
     }
 
     
-    // Function to fetchAllPhotos for a selected Pin on the map
+    // Function to fetchAllPhotos for a selected Pin on the map as soon as the user drops it on the mapView -> "Exceeding Specifications :)"
     func fetchPhotosForPin(pin: Pin) {
         
         FlickrClient.sharedInstance.downloadPhotosForPin(pin, completionHandler: {
@@ -136,7 +134,7 @@ class VirtualTouristMap: UIViewController, MKMapViewDelegate {
             
             if success {
                 
-                //Save the new Photo objects to Core Data.
+                //Save the new Photo objects to Core Data
                 dispatch_async(dispatch_get_main_queue(), {
                     CoreDataStackManager.sharedInstance.saveContext()
                 })

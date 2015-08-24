@@ -12,7 +12,7 @@ class FlickrClient {
     
     //MARK: - Shared Instance
     
-    //Single line shared instance declaration as in http://krakendev.io/blog/the-right-way-to-write-a-singleton
+    //Single line shared instance declaration as proved in http://krakendev.io/blog/the-right-way-to-write-a-singleton
     
     static let sharedInstance = FlickrClient()
     
@@ -89,15 +89,10 @@ class FlickrClient {
         
         for (key, value) in parameters {
             
-            /* Make sure that it is a string value */
             let stringValue = "\(value)"
-            
-            /* Escape it */
-            let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
-            
-            /* Append it */
-            urlVars += [key + "=" + "\(escapedValue!)"]
-            
+            let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())
+            let replaceSpaceValue = stringValue.stringByReplacingOccurrencesOfString(" ", withString: "+", options: .LiteralSearch, range: nil)
+            urlVars += [key + "=" + "\(replaceSpaceValue)"]
         }
         
         return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
