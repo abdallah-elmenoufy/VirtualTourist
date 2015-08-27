@@ -111,16 +111,12 @@
 		B230B3291B71F69200BC20AB /* Virtual Tourist */ = {
 			isa = PBXGroup;
 			children = (
-				B2E673631B887B4900B4F789 /* Data Objects */,
-				B219E7271B753ECC00DC1E15 /* Flickr Client */,
 				B219E71F1B73FB0F00DC1E15 /* CoreDataStackManager.swift */,
 				B230B32C1B71F69200BC20AB /* AppDelegate.swift */,
-				B230B3311B71F69200BC20AB /* VirtualTouristMap.swift */,
-				B2E673661B888FE000B4F789 /* PhotoCollectionViewController.swift */,
-				B2E673641B888FA400B4F789 /* PhotoCollectionViewCell.swift */,
-				B230B3331B71F69200BC20AB /* Main.storyboard */,
+				B2E6736A1B8F35E300B4F789 /* Views */,
+				B2E673631B887B4900B4F789 /* Data Objects */,
+				B219E7271B753ECC00DC1E15 /* Flickr Client */,
 				B230B3361B71F69200BC20AB /* Images.xcassets */,
-				B2E673681B88A81500B4F789 /* Ooops.jpg */,
 				B230B32E1B71F69200BC20AB /* Virtual_Tourist.xcdatamodeld */,
 				B230B32A1B71F69200BC20AB /* Supporting Files */,
 			);
@@ -130,6 +126,8 @@
 		B230B32A1B71F69200BC20AB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B2E673681B88A81500B4F789 /* Ooops.jpg */,
+				B230B3331B71F69200BC20AB /* Main.storyboard */,
 				B230B3381B71F69200BC20AB /* LaunchScreen.xib */,
 				B230B32B1B71F69200BC20AB /* Info.plist */,
 			);
@@ -160,6 +158,16 @@
 				B2E673601B88792A00B4F789 /* Photo.swift */,
 			);
 			name = "Data Objects";
+			sourceTree = "<group>";
+		};
+		B2E6736A1B8F35E300B4F789 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B2E673641B888FA400B4F789 /* PhotoCollectionViewCell.swift */,
+				B2E673661B888FE000B4F789 /* PhotoCollectionViewController.swift */,
+				B230B3311B71F69200BC20AB /* VirtualTouristMap.swift */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
