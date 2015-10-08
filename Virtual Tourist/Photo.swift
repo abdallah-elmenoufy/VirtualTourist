@@ -32,7 +32,7 @@ class Photo: NSManagedObject {
             
             // Get the filePath
             let fileName = imageFilePath.lastPathComponent
-            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
+            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
             let pathArray = [dirPath, fileName]
             let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
             
@@ -65,11 +65,28 @@ class Photo: NSManagedObject {
         //Delete the associated image file when the Photo managed object is deleted
         if let fileName = imageFilePath?.lastPathComponent {
             
-            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
+            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
             let pathArray = [dirPath, fileName]
             let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
             
-            NSFileManager.defaultManager().removeItemAtURL(fileURL, error: nil)
+            do {
+                try NSFileManager.defaultManager().removeItemAtURL(fileURL)
+            } catch _ {
+            }
+        }
+    }
+    
+}
+
+/* Added extension for String struct to get the lastPathComponent as a workaround for non-existance in Swift 2.0
+Reference are here: https://forums.developer.apple.com/thread/13580 */
+
+extension String {
+    
+    var lastPathComponent: String {
+        
+        get {
+            return (self as NSString).lastPathComponent
         }
     }
 }

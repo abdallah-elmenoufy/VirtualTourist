@@ -22,7 +22,7 @@ extension FlickrClient {
         
         if let numberOfPages = pin.numberOfPagesReturned {
             
-            let numberOfPagesAsInt = numberOfPages as! Int
+            let numberOfPagesAsInt = numberOfPages as Int
              randomPage = Int((arc4random_uniform(UInt32(numberOfPagesAsInt)))) + 1 //Avoids returning 0 as a response.
             
         }
@@ -108,7 +108,7 @@ extension FlickrClient {
                     
                     //...make a fileURL for it...
                     let fileName = imageURLString.lastPathComponent //Already includes ".jpg" suffix.
-                    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
+                    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
                     let pathArray = [dirPath, fileName]
                     let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
                     
